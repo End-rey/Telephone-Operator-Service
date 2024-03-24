@@ -10,6 +10,10 @@ import org.endrey.telephone.operator.service.UDRService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class is responsible for the main loop of the Telephone Operator application.
+ * It provides a command-line interface for the user to interact with the application.
+ */
 @Component
 public class MainLoop {
 

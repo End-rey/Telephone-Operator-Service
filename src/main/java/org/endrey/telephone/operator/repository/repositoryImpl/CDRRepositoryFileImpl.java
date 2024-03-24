@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,11 +24,21 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 
 @Repository
+/**
+ * This class is used to read and write CDR data from/to files in txt format.
+ *
+ */
 public class CDRRepositoryFileImpl implements CDRRepositoryFile {
 
     @Autowired
     private AbonentRepositoryH2 abonentRepository;
 
+    /**
+     * This method saves the list of CDR entities to file in txt format.
+     * It saves one file per month.
+     * @param cdrList the list of CDR entities to save
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public void saveToFile(List<CDR> cdrList) throws IOException {
         Map<Integer, List<CDR>> cdrMap = cdrList.stream().collect(Collectors.groupingBy(cdr -> cdr.getStartTime().getMonthValue()));
@@ -47,11 +58,19 @@ public class CDRRepositoryFileImpl implements CDRRepositoryFile {
                 }
             }
         }
-
         
     }
 
+    /**
+     * This method returns the file name for the specified month in the format
+     * "./CDR/<month>.txt".
+     *
+     * @param month the month number
+     * @return the file name
+     * @throws IOException if an I/O error occurs
+     */
     private String getFileName(int month) throws IOException {
+
 
         String directory = "./CDR/";
         Files.createDirectories(Paths.get(directory));
@@ -59,15 +78,36 @@ public class CDRRepositoryFileImpl implements CDRRepositoryFile {
         return String.format(directory + "/%d.txt", month);
     }
 
+    /**
+     * This method returns a list of CDR objects for a specific phone number
+     * and month from the CDR file.
+     * 
+     * @param phoneNumber the phone number to filter by
+     * @param month the month to filter by
+     * @return a list of CDR objects
+     * @throws NumberFormatException if the unix time is not a valid number
+     * @throws FileNotFoundException if the file was not found
+     * @throws IOException if an I/O error occurs
+     */
     @Override
-    public List<CDR> findAllByPhoneNumberAndMonth(String phoneNumber, int month) throws IOException {
+    public List<CDR> findAllByPhoneNumberAndMonth(String phoneNumber, int month)
+            throws NumberFormatException, FileNotFoundException, IOException {
         String fileName = getFileName(month);
 
         return parseFile(fileName, phoneNumber);
     }
 
+    /**
+     * This method returns a list of all CDR objects stored in the CDR file.
+     * 
+     * @return a list of all CDR objects
+     * @throws NumberFormatException if the unix time is not a valid number
+     * @throws FileNotFoundException if the file was not found
+     * @throws IOException if an I/O error occurs
+     */
     @Override
-    public List<CDR> findAll() throws IOException {
+    public List<CDR> findAll() throws NumberFormatException, FileNotFoundException, IOException {
+
         List<CDR> cdrList = new ArrayList<>();
         for (int month = 1; month <= 12; month++) {
             cdrList.addAll(findAllByPhoneNumberAndMonth("", month));
@@ -76,8 +116,20 @@ public class CDRRepositoryFileImpl implements CDRRepositoryFile {
         return cdrList;
     }
 
+    /**
+     * This method returns a list of CDR objects for a specific phone number
+     * from all CDR files.
+     * 
+     * @param phoneNumber the phone number to filter by
+     * @return a list of CDR objects
+     * @throws NumberFormatException if the unix time is not a valid number
+     * @throws FileNotFoundException if the file was not found
+     * @throws IOException if an I/O error occurs
+     */
     @Override
-    public List<CDR> findAllByPhoneNumber(String phoneNumber) throws IOException {
+    public List<CDR> findAllByPhoneNumber(String phoneNumber)
+            throws NumberFormatException, FileNotFoundException, IOException {
+
 
         List<CDR> cdrList = new ArrayList<>();
         for (int month = 1; month <= 12; month++) {
@@ -89,7 +141,21 @@ public class CDRRepositoryFileImpl implements CDRRepositoryFile {
         return cdrList;
     }
 
-    private List<CDR> parseFile(String fileName, String phoneNumber) throws IOException {
+    /**
+     * This method parses a CDR file and returns a list of CDR objects
+     * based on the phone number filter.
+     * If the phoneNumber parameter is empty, it will return all CDR objects
+     * from the file.
+     *
+     * @param fileName the name of the CDR file
+     * @param phoneNumber the phone number to filter by
+     * @return a list of CDR objects
+     * @throws NumberFormatException if the unix time is not a valid number
+     * @throws FileNotFoundException if the file was not found
+     * @throws IOException if an I/O error occurs
+     */
+    private List<CDR> parseFile(String fileName, String phoneNumber)
+            throws NumberFormatException, FileNotFoundException, IOException {
         List<CDR> cdrList = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
