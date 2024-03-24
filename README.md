@@ -67,7 +67,7 @@
 
 ## Запуск проекта:
 ```cmd
-java -jar telephone-operator-service-0.0.1-SNAPSHOT.jar
+java -jar .\jar\telephone-operator-service-0.0.1-SNAPSHOT.jar
 ```
 
 ## Описание работы проекта:
