@@ -71,30 +71,10 @@ public class CDRRepositoryFileImpl implements CDRRepositoryFile {
      */
     private String getFileName(int month) throws IOException {
 
-
         String directory = "./CDR/";
         Files.createDirectories(Paths.get(directory));
 
         return String.format(directory + "/%d.txt", month);
-    }
-
-    /**
-     * This method returns a list of CDR objects for a specific phone number
-     * and month from the CDR file.
-     * 
-     * @param phoneNumber the phone number to filter by
-     * @param month the month to filter by
-     * @return a list of CDR objects
-     * @throws NumberFormatException if the unix time is not a valid number
-     * @throws FileNotFoundException if the file was not found
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    public List<CDR> findAllByPhoneNumberAndMonth(String phoneNumber, int month)
-            throws NumberFormatException, FileNotFoundException, IOException {
-        String fileName = getFileName(month);
-
-        return parseFile(fileName, phoneNumber);
     }
 
     /**
@@ -130,15 +110,33 @@ public class CDRRepositoryFileImpl implements CDRRepositoryFile {
     public List<CDR> findAllByPhoneNumber(String phoneNumber)
             throws NumberFormatException, FileNotFoundException, IOException {
 
-
         List<CDR> cdrList = new ArrayList<>();
         for (int month = 1; month <= 12; month++) {
-            String fileName = getFileName(month);
-
-            cdrList.addAll(parseFile(fileName, phoneNumber));
+            cdrList.addAll(findAllByPhoneNumberAndMonth(phoneNumber, month));
         }
 
         return cdrList;
+    }
+    
+    /**
+     * This method returns a list of CDR objects for a specific phone number
+     * and month from the CDR file.
+     * 
+     * @param phoneNumber the phone number to filter by
+     * @param month the month to filter by
+     * @return a list of CDR objects
+     * @throws NumberFormatException if the unix time is not a valid number
+     * @throws FileNotFoundException if the file was not found
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public List<CDR> findAllByPhoneNumberAndMonth(String phoneNumber, int month)
+            throws NumberFormatException, FileNotFoundException, IOException {
+        String fileName = getFileName(month);
+        if (!Files.exists(Paths.get(fileName))) {
+            return new ArrayList<>();
+        }
+        return parseFile(fileName, phoneNumber);
     }
 
     /**

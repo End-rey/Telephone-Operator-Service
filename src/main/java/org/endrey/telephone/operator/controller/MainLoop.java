@@ -64,7 +64,6 @@ public class MainLoop {
 
             switch (choice) {
                 case 1:
-                    System.out.println("Enter year: ");
                     System.out.println("Enter month: ");
                     int month = scanner.nextInt();
                     scanner.nextLine();
