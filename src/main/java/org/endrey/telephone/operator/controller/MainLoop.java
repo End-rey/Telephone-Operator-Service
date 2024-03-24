@@ -136,6 +136,6 @@ public class MainLoop {
     private void printUDR(UDR udr) {
         System.out.println("UDR for MSISDN: " + udr.getMsisdn());
         System.out.println("Incoming Call: " + udr.getIncomingCall().getTotalTime());
-        System.out.println("Outgoing Call: " + udr.getOutcomingCall().getTotalTime());
+        System.out.println("Outcoming Call: " + udr.getOutcomingCall().getTotalTime());
     }
 }

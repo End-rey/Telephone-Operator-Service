@@ -2,7 +2,7 @@ package org.endrey.telephone.operator.enums;
 
 public enum CallType {
     INCOMING_CALL("01"),
-    OUTGOING_CALL("02");
+    OUTCOMING_CALL("02");
 
     private String code;
 
